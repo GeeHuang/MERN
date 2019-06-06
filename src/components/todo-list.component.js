@@ -4,9 +4,9 @@ import axios from 'axios';
 
 const Todo = props => (
     <tr>
-        <td>{props.todo.todo_description}</td>
-        <td>{props.todo.todo_responsible}</td>
-        <td>{props.todo.todo_priority}</td>
+        <td className = {props.todo.todo_completed ? 'completed' : ""}>{props.todo.todo_description}</td>
+        <td className = {props.todo.todo_completed ? 'completed' : ""}>{props.todo.todo_responsible}</td>
+        <td className = {props.todo.todo_completed ? 'completed' : ""}>{props.todo.todo_priority}</td>
         <td>
             <Link to={"/edit/"+props.todo._id}>Edit</Link>
         </td>
@@ -24,7 +24,6 @@ export default class TodosList extends Component {
         axios.get('http://localhost:8080/todos/')
             .then(response => {
                 this.setState({ todos: response.data });
-                console.log({ todos: response.data });
             })
             .catch(function (error){
                 console.log(error);

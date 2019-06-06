@@ -3,37 +3,35 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
-
 const todoRoutes = express.Router();
-let Todo = require('./todo.model');
-
 const PORT = 8080;
+
+let Todo = require('./todo.model');
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use('/todos', todoRoutes);
 
 mongoose.connect('mongodb://127.0.0.1:27017/todos', { useNewUrlParser: true });
 const connection = mongoose.connection;
 
 connection.once('open', function() {
     console.log("MongoDB database connection established successfully");
-});
+})
 
-todoRoutes.route('/').get((req,res) => {
-    Todo.find((err, todos) => {
-        if(err) {
+todoRoutes.route('/').get(function(req, res) {
+    Todo.find(function(err, todos) {
+        if (err) {
             console.log(err);
-        }else {
+        } else {
             res.json(todos);
         }
     });
 });
 
-todoRoutes.route('/:id').get((req,res) => {
+todoRoutes.route('/:id').get(function(req, res) {
     let id = req.params.id;
-    Todo.findById(id, (err, todos) => {
-        res.json(todos);
+    Todo.findById(id, function(err, todo) {
+        res.json(todo);
     });
 });
 
@@ -46,6 +44,7 @@ todoRoutes.route('/update/:id').post(function(req, res) {
             todo.todo_responsible = req.body.todo_responsible;
             todo.todo_priority = req.body.todo_priority;
             todo.todo_completed = req.body.todo_completed;
+
             todo.save().then(todo => {
                 res.json('Todo updated!');
             })
@@ -57,7 +56,6 @@ todoRoutes.route('/update/:id').post(function(req, res) {
 
 todoRoutes.route('/add').post(function(req, res) {
     let todo = new Todo(req.body);
-    console.log(todo);
     todo.save()
         .then(todo => {
             res.status(200).json({'todo': 'todo added successfully'});
@@ -67,4 +65,8 @@ todoRoutes.route('/add').post(function(req, res) {
         });
 });
 
-app.listen(PORT, () => console.log(`Server is running on PORT: ${PORT}`));
+app.use('/todos', todoRoutes);
+
+app.listen(PORT, function() {
+    console.log("Server is running on Port: " + PORT);
+});
